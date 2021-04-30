@@ -1,48 +1,69 @@
 //Huffman Encoder & Decoder
+//Takes a text string and encodes it for compression
+//Takes an encoded string and decodes it back to text
+
+class Huffman {
+
+    constructor(text){
+      this.text = text;
+      this.map = [];
+    }
+
+    initialise(){
+      this.createSortableChars();
+      this.sortArray(this.map);
+      this.createMap();
+    }
+
+    sortArray(arr){
+      return arr.sort((a, b) => {
+        return b[1] - a[1];
+      });
+    }
+
+    createSortableChars(){
+      const stringObject = {};
+      
+      const stringArr = this.text.split("");
+    
+      //enumerates the string into an object with its appearance quantity
+      stringArr.forEach(char => {
+        if(stringObject[char] == undefined){
+          stringObject[char] = 1;
+        } else {
+          stringObject[char] += 1;
+        }
+      });
+    
+      //Puts the object into an array
+      for (let char in stringObject){
+        this.map.push([char, stringObject[char]]);
+      }
+    }
+
+    createMap(){
+      //initialise array lengths here as they will change
+      const m1 = this.map.length - 1;
+      const m2 = this.map.length - 2;
+
+      if(this.map[m2] === undefined){
+        return;
+      }
+      const lastTwoAdded = this.map[m1][1] + this.map[m2][1];
+      //pushes an array with the last two entries in an array with the sum
+      this.map.push([[this.map.pop(), this.map.pop()],lastTwoAdded]);
+
+      this.map = this.sortArray(this.map);
+      this.createMap(this.map);
+      return
+    }
+}
+
+
 const testString = "This is a sentence and it has lots of wordz and letters lol hi";
 
-const createSortableChars = string => {
 
-  const stringObject = {};
-  const sortable = [];
-  
-  const stringArr = string.split("");
-  stringArr.forEach(char => {
-    if(stringObject[char] == undefined){
-      stringObject[char] = 1;
-    } else {
-      stringObject[char] += 1;
-    }
-  });
+const classMap = new Huffman(testString);
+classMap.initialise();
 
-  for (let char in stringObject){
-    sortable.push([char, stringObject[char]]);
-  }
-  return sortable;
-};
-
-const sortArray = arr => {
-  return arr.sort((a, b) => {
-    return b[1] - a[1];
-  });
-}
-
-const createMap = array => {
-  const m1 = array.length - 1;
-  const m2 = array.length - 2;
-
-  if(array[m2] === undefined){
-    return array;
-  }
-  console.log(array[m1][1]);
-  //pushes an array with the last two entries in an array with the sum
-  array.push([[array.pop(), array.pop()],array[m1][1] + array[m2][1]]);
-  console.log(array);
-  array = sortArray(array);
-  createMap(array);
-}
-
-const mainArray = createSortableChars(testString);
-const sorted = sortArray(mainArray);
-const map = createMap(sorted);
-console.log(map);
+console.dir(classMap.map, {depth:null});
